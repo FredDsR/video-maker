@@ -12,12 +12,19 @@ const nlu = new NaturalLanguageUnderstandingV1({
   url: 'https://gateway.watsonplatform.net/natural-language-understanding/api/'
 });
 
-async function robot(content) {
+const state = require('./state.js')
+
+async function robot() {
+
+    const content = await state.load()
+
     await fetchContentFromWikipedia(content)
     sanitizeContent(content)
     breakContentIntoSentences(content)
     limitMaximumSentences(content)
     await fechKeywordsOfAllSentences(content)
+
+    state.save(content)
 
     async function fetchContentFromWikipedia(content) {
         const algorithmiaAuthenticated = algorithmia(process.env.ALGORITHMIA_KEY)
