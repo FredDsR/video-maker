@@ -3,10 +3,21 @@ const sntenceBoundaryDetection = require('sbd')
 
 require('dotenv').config()
 
+const NaturalLanguageUnderstandingV1 = require('ibm-watson/natural-language-understanding/v1');
+const { IamAuthenticator } = require('ibm-watson/auth');
+ 
+const nlu = new NaturalLanguageUnderstandingV1({
+  authenticator: new IamAuthenticator({ apikey: process.env.WATSON_NLU_KEY }),
+  version: '2018-04-05',
+  url: 'https://gateway.watsonplatform.net/natural-language-understanding/api/'
+});
+
 async function robot(content) {
     await fetchContentFromWikipedia(content)
     sanitizeContent(content)
     breakContentIntoSentences(content)
+    limitMaximumSentences(content)
+    await fechKeywordsOfAllSentences(content)
 
     async function fetchContentFromWikipedia(content) {
         const algorithmiaAuthenticated = algorithmia(process.env.ALGORITHMIA_KEY)
@@ -38,7 +49,7 @@ async function robot(content) {
         }
 
         function removeDatesInParentheses(text) {
-            return text.replace(/\((?:\([^()]*\)|[^()])*\)/gm, '').replace(/  /g,' ')
+            return text.replace(/\((?:\([^()]*\)|[^()])*\)/gm, '').replace(/  /g,' ').replace(/[\\"]/g, '')
         }
     }
 
@@ -52,6 +63,35 @@ async function robot(content) {
                 text: sentence,
                 keywords: [],
                 images: []
+            })
+        })
+    }
+
+    function limitMaximumSentences(content) {
+        content.sentences = content.sentences.slice(0, content.maximumSentences)
+    }
+
+    async function fechKeywordsOfAllSentences(content) {
+        for (const sentence of content.sentences) {
+            sentence.keywords = await fetchWatsonAndReturnKeywords(sentence.text)
+        }
+    }
+
+    async function fetchWatsonAndReturnKeywords(sentence) {
+        return new Promise((resolve, reject) => {
+            nlu.analyze({
+                text: sentence,
+                features: {
+                keywords: {}
+                }
+            }).then(res => {
+                const keywords = res.result.keywords.map((keyword) => {
+                    return keyword.text
+                })
+                resolve(keywords)
+            }).catch(err => {
+                reject(err)
+                return
             })
         })
     }
