@@ -65,3 +65,4 @@ content.json
 
 # image files
 content/*.png
+content/*.jpg
