@@ -62,3 +62,6 @@ typings/
 
 # file to save content system
 content.json
+
+# image files
+content/*.png

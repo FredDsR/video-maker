@@ -10,6 +10,7 @@ async function start() {
     await robots.text()
     await robots.image()
 
+    console.log(' >> The process is complete.')
     const content = robots.state.load()
     console.dir(content, { depth: null })
 }
