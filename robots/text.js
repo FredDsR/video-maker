@@ -15,6 +15,7 @@ const nlu = new NaturalLanguageUnderstandingV1({
 const state = require('./state.js')
 
 async function robot() {
+    console.log(' >> Starting text robot...')
 
     const content = await state.load()
 
