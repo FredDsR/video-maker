@@ -17,6 +17,9 @@
   },
   "homepage": "https://github.com/FredDsR/video-maker#readme",
   "dependencies": {
+    "@ffmpeg-installer/ffmpeg": "^1.0.17",
+    "@ffprobe-installer/ffprobe": "^1.0.10",
+    "videoshow": "^0.1.11",
     "algorithmia": "^0.3.10",
     "dotenv": "^8.2.0",
     "gm": "^1.23.1",

@@ -1,4 +1,11 @@
 const gm = require('gm').subClass({imageMagick: true})
+const videoshow = require('videoshow')
+const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path
+const ffprobePath = require('@ffprobe-installer/ffprobe').path
+
+const ffmpeg = require('fluent-ffmpeg')
+ffmpeg.setFfmpegPath(ffmpegPath)
+ffmpeg.setFfprobePath(ffprobePath)
 
 const state = require('./state.js')
 
@@ -7,8 +14,9 @@ async function robot() {
     const content = state.load()
   
     await convertAllImages(content)
-    await createAllSentenceImages(content)
+    // await createAllSentenceImages(content)
     await createYouTubeThumbnail()
+    await renderVideoWithNode(content)
 
     async function convertAllImages(content) {
         for (let sentenceIndex = 0; sentenceIndex < content.sentences.length; sentenceIndex++) {
@@ -125,6 +133,66 @@ async function robot() {
                     console.log('> [video-robot] YouTube thumbnail created')
                     resolve()
                 })
+        })
+    }
+
+    async function renderVideoWithNode(content) {
+        return new Promise((resolve, reject) => {
+            const images = []
+
+            for (let sentenceIndex = 0; sentenceIndex < content.sentences.length; sentenceIndex++) {
+                images.push({
+                    path: `./content/${sentenceIndex}-converted.png`,
+                    caption: content.sentences[sentenceIndex].text
+                })
+            }
+
+            const videoOptions = {
+                fps: 25,
+                loop: 10, // seconds
+                transition: true,
+                transitionDuration: 1, // seconds
+                videoBitrate: 1024,
+                videoCodec: "libx264",
+                size: "90%",
+                audioBitrate: "128k",
+                audioChannels: 2,
+                format: "mp4",
+                pixelFormat: "yuv420p",
+                useSubRipSubtitles: false, // Use ASS/SSA subtitles instead
+                subtitleStyle: {
+                    Fontname: "Verdana",
+                    Fontsize: "26",
+                    PrimaryColour: "11861244",
+                    SecondaryColour: "11861244",
+                    TertiaryColour: "11861244",
+                    BackColour: "-2147483640",
+                    Bold: "2",
+                    Italic: "0",
+                    BorderStyle: "2",
+                    Outline: "2",
+                    Shadow: "3",
+                    Alignment: "2", // left, middle, right
+                    MarginL: "40",
+                    MarginR: "60",
+                    MarginV: "40"
+                }
+            }
+
+            videoshow(images, videoOptions)
+                .audio("./content/song.mp3")
+                .save("video.mp4")
+                .on("start", command => {
+                    console.log("> [video-robot] ffmpeg process execute:", command);
+                })
+                .on("error", (err, stdout, stderr) => {
+                    console.error("> [video-robot] Error:", err);
+                    console.error("> [video-robot] ffmpeg stderr:", stderr);
+                })
+                .on("end", output => {
+                    console.error("> [video-robot] Video created in:", output);
+                    resolve()
+                });
         })
     }
 }
