@@ -147,6 +147,8 @@ async function robot() {
                 })
             }
 
+            images[0].transition = false
+
             const videoOptions = {
                 fps: 25,
                 loop: 10, // seconds
@@ -154,14 +156,14 @@ async function robot() {
                 transitionDuration: 1, // seconds
                 videoBitrate: 1024,
                 videoCodec: "libx264",
-                size: "90%",
+                size: "50%",
                 audioBitrate: "128k",
                 audioChannels: 2,
                 format: "mp4",
                 pixelFormat: "yuv420p",
                 useSubRipSubtitles: false, // Use ASS/SSA subtitles instead
                 subtitleStyle: {
-                    Fontname: "Verdana",
+                    Fontname: "Impact",
                     Fontsize: "26",
                     PrimaryColour: "11861244",
                     SecondaryColour: "11861244",
@@ -182,15 +184,18 @@ async function robot() {
             videoshow(images, videoOptions)
                 .audio("./content/song.mp3")
                 .save("video.mp4")
+                .on('progress', progress => {
+                    console.log(`> [video-robot] Processing: ${Math.round(progress.percent)}% done`);
+                })
                 .on("start", command => {
                     console.log("> [video-robot] ffmpeg process execute:", command);
-                })
+                })  
                 .on("error", (err, stdout, stderr) => {
                     console.error("> [video-robot] Error:", err);
                     console.error("> [video-robot] ffmpeg stderr:", stderr);
                 })
                 .on("end", output => {
-                    console.error("> [video-robot] Video created in:", output);
+                    console.error(`> [video-robot] Process end. Video created in: ./${output}`);
                     resolve()
                 });
         })
