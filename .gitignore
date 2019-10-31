@@ -66,4 +66,4 @@ content.json
 # image files
 content/*.png
 content/*.jpg
-*.mp4
+content/*.mp4
