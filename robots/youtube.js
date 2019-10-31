@@ -7,6 +7,7 @@ const fs = require('fs')
 const state = require('./state.js')
 
 async function robot() {
+    console.log('> [youtube-robot] Starting...')
     const content = state.load()
 
     await authenticateWithOAuth()
@@ -128,6 +129,7 @@ async function robot() {
             }
         }
 
+        console.log('> [youtube-robot] Starting to upload the video to YouTube...')
         const youtubeResponse = await youtube.videos.insert(requestParams, {
             onUploadProgress: onUploadProgress
         })
