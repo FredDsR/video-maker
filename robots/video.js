@@ -183,19 +183,19 @@ async function robot() {
 
             videoshow(images, videoOptions)
                 .audio("./content/song.mp3")
-                .save("video.mp4")
+                .save("./content/video.mp4")
                 .on('progress', progress => {
                     console.log(`> [video-robot] Processing: ${Math.round(progress.percent)}% done`);
                 })
                 .on("start", command => {
-                    console.log("> [video-robot] ffmpeg process execute:", command);
+                    console.log(`> [video-robot] Executing: ${command}`);
                 })  
                 .on("error", (err, stdout, stderr) => {
-                    console.error("> [video-robot] Error:", err);
-                    console.error("> [video-robot] ffmpeg stderr:", stderr);
+                    console.error(`> [video-robot] Error: ${err}`);
+                    console.error(`> [video-robot] ffmpeg stderr: ${stderr}`);
                 })
                 .on("end", output => {
-                    console.error(`> [video-robot] Process end. Video created in: ./${output}`);
+                    console.error(`> [video-robot] File created: ${output}`);
                     resolve()
                 });
         })
