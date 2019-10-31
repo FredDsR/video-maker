@@ -137,6 +137,7 @@ async function robot() {
     }
 
     async function renderVideoWithNode(content) {
+        console.log("> [video-robot] Rendering...")
         return new Promise((resolve, reject) => {
             const images = []
 
@@ -184,11 +185,9 @@ async function robot() {
             videoshow(images, videoOptions)
                 .audio("./content/song.mp3")
                 .save("./content/video.mp4")
-                .on('progress', progress => {
-                    console.log(`> [video-robot] Processing: ${Math.round(progress.percent)}% done`);
-                })
                 .on("start", command => {
                     console.log(`> [video-robot] Executing: ${command}`);
+                    console.log('> [video-robot] Processing...')
                 })  
                 .on("error", (err, stdout, stderr) => {
                     console.error(`> [video-robot] Error: ${err}`);
