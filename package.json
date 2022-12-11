@@ -21,7 +21,7 @@
     "@ffprobe-installer/ffprobe": "^1.0.10",
     "algorithmia": "^0.3.10",
     "dotenv": "^8.2.0",
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "gm": "^1.23.1",
     "googleapis": "^44.0.0",
     "ibm-watson": "^5.1.0",
